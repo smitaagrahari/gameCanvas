@@ -83,8 +83,14 @@ else if(keys.left.pressed){
     player.velocity.x = -5;
 }
 else{
-    player.velocity.x = 0;
+    player.velocity.x = 0;  
 }
+if(player.position.x+player.width>=platform.position.x &&
+     player.position.x<=platform.position.x+platform.width && 
+     player.position.y+player.height>=platform.position.y &&
+    player.position.y<=platform.position.y+platform.height){
+        player.velocity.x=0;
+    }
 
     player.draw();
 player.update();
