@@ -54,7 +54,7 @@ const keys={
  }
 
 
- class platform{
+ class platforms{
     constructor(x,y,width,height){
         this.position={
            x:x,
@@ -71,7 +71,7 @@ const keys={
  // now players movement part 
 
  const player = new Player();
- const pf=new platform(500,window.innerHeight-100,50,100);
+ const pf=new platforms(500,window.innerHeight-100,50,100);
 function animate(){
     requestAnimationFrame(animate);
     ctx.clearRect(0,0,gameCanvas.width,gameCanvas.height);
@@ -85,12 +85,17 @@ else if(keys.left.pressed){
 else{
     player.velocity.x = 0;  
 }
-if(player.position.x+player.width>=platform.position.x &&
-     player.position.x<=platform.position.x+platform.width && 
-     player.position.y+player.height>=platform.position.y &&
-    player.position.y<=platform.position.y+platform.height){
+if(player.position.x+player.width>=pf.position.x &&
+     player.position.x<=pf.position.x+pf.width && 
+     player.position.y+player.height>=pf.position.y &&
+    player.position.y<=pf.position.y+pf.height){
         player.velocity.x=0;
     }
+     if(player.position.y+player.height+player.velocity.y>=pf.position.y && player.position.x+player.width>=pf.position.x &&
+        player.position.x<=pf.position.x+pf.width 
+
+    )
+        player.velocity.y=0;
 
     player.draw();
 player.update();
