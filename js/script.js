@@ -52,12 +52,30 @@ const keys={
 
     }
  }
+
+
+ class platform{
+    constructor(x,y,width,height){
+        this.position={
+           x:x,
+           y:y
+    }
+    this.width=width
+    this.height=height;
+ }
+ draw(){
+    ctx.fillStyle="brown";
+    ctx.fillRect(this.position.x,this.position.y,this.width,this.height);
+ }
+}
  // now players movement part 
 
  const player = new Player();
+ const pf=new platform(500,window.innerHeight-100,50,100);
 function animate(){
     requestAnimationFrame(animate);
     ctx.clearRect(0,0,gameCanvas.width,gameCanvas.height);
+    pf.draw();
  if(keys.right.pressed){
     player.velocity.x = 5;
 }
@@ -73,6 +91,10 @@ player.update();
    
 }
 animate();
+
+
+
+
 // eventlistener
 window.addEventListener("keydown",(event)=>{
     if(event.key==="ArrowRight"){
