@@ -1,20 +1,25 @@
-const gameCanvas=document.getElementById("gameCanvas");
- gameCanvas.width=window.innerWidth;
- gameCanvas.height=window.innerHeight;
- gameCanvas.style.background="pink";
- const ctx=gameCanvas.getContext("2d");
+//1. Project Setup
+// Html->canvas, css
+// javascript reference
+// canvas setting and obtaining context
+//2. Player setup, 
+//3. Velocity y
+//4. gravity
+//5. Movement 
+//6. Platform
 const gravity=0.5;
-// for player...
-const keys={
-    right:{
-        pressed:false
-    },
-    left:{
-        pressed:false
-    }
+const speed=2;
 
+const gameCanvas=document.querySelector("#gameCanvas");
+gameCanvas.width=window.innerWidth;
+gameCanvas.height=window.innerHeight;
+gameCanvas.style.background="pink";
+const keys={
+    right:false,
+    left:false
 }
- class Player{
+const context=gameCanvas.getContext("2d");
+class Player{
     constructor(){
         this.position={
             x:150,
@@ -24,106 +29,103 @@ const keys={
             x:0,
             y:1
         }
-        this.width=20,
+        this.width=20;
         this.height=20;
     }
-    draw(){
-        ctx.fillStyle="black";
-        ctx.fillRect(this.position.x,this.position.y,this.width,this.height);
-    } 
+    draw()
+    {
+        context.fillStyle="black";
+        context.fillRect(this.position.x,this.position.y,this.width,this.height);
+    }
     update(){
+
         this.position.y+=this.velocity.y;
         this.position.x+=this.velocity.x;
-     if(this.position.y + this.height >= gameCanvas.height){
-        this.velocity.y = 0;
-        this.position.y = gameCanvas.height - this.height;
-    } else {
-        this.velocity.y += gravity;
-    }
-    // Right wall
-    if(this.position.x + this.width >= gameCanvas.width){
-        this.position.x = gameCanvas.width - this.width;
-    }
 
-    // Left wall
-    if(this.position.x <= 0){
-        this.position.x = 0;
-    }
-
-    }
- }
+        if(this.position.y+this.height+this.velocity.y>=window.innerHeight)
+            this.velocity.y=0;
+        else
+            this.velocity.y+=gravity;
 
 
- class platforms{
-    constructor(x,y,width,height){
+        this.draw();
+    }
+}
+class Platform
+{
+    constructor(x,y,width,height)
+    {
         this.position={
-           x:x,
-           y:y
+            x:x,
+            y:y
+        }
+        this.width=width;
+        this.height=height;
     }
-    this.width=width
-    this.height=height;
- }
- draw(){
-    ctx.fillStyle="brown";
-    ctx.fillRect(this.position.x,this.position.y,this.width,this.height);
- }
+    draw()
+    {
+        context.fillStyle="brown";
+        context.fillRect(this.position.x,this.position.y,this.width,this.height);
+    }
 }
- // now players movement part 
+const player=new Player();
+player.draw();
+const platform=new Platform(350,window.innerHeight-100,50,100);
+//const platform=new Platform(350,window.innerHeight-100,100,20);
+platform.draw();
 
- const player = new Player();
- const pf=new platforms(500,window.innerHeight-100,50,100);
-function animate(){
+
+function animate()
+{
     requestAnimationFrame(animate);
-    ctx.clearRect(0,0,gameCanvas.width,gameCanvas.height);
-    pf.draw();
- if(keys.right.pressed){
-    player.velocity.x = 5;
-}
-else if(keys.left.pressed){
-    player.velocity.x = -5;
-}
-else{
-    player.velocity.x = 0;  
-}
-if(player.position.x+player.width>=pf.position.x &&
-     player.position.x<=pf.position.x+pf.width && 
-     player.position.y+player.height>=pf.position.y &&
-    player.position.y<=pf.position.y+pf.height){
+    context.clearRect(0,0,window.innerWidth,window.innerHeight);
+
+    
+    platform.draw();
+    player.update();
+
+    if(keys.right && player.position.x<=800)
+        player.velocity.x=speed;
+    else if(keys.left && player.position.x>=180)
+        player.velocity.x=-speed;
+    else 
         player.velocity.x=0;
-    }
-     if(player.position.y+player.height+player.velocity.y>=pf.position.y && player.position.x+player.width>=pf.position.x &&
-        player.position.x<=pf.position.x+pf.width 
+
+    if(player.position.x+player.width>=platform.position.x &&
+        player.position.x<=platform.position.x+platform.width &&
+        player.position.y+player.height>=platform.position.y &&
+        player.position.y<=platform.position.y+platform.height
+    )
+        player.velocity.x=0;
+
+    if(player.position.y+player.height+player.velocity.y>=platform.position.y && player.position.x+player.width>=platform.position.x &&
+        player.position.x<=platform.position.x+platform.width 
 
     )
         player.velocity.y=0;
 
-    player.draw();
-player.update();
-   
+
 }
 animate();
 
-
-
-
-// eventlistener
-window.addEventListener("keydown",(event)=>{
-    if(event.key==="ArrowRight"){
-        keys.right.pressed=true;
-    }
-    if(event.key==="ArrowLeft"){
-        keys.left.pressed=true;
-    }
-    if(event.key==="ArrowUp"){
+addEventListener("keydown",(e)=>{
+    //console.log(e);
+    if(e.key=="ArrowRight")
+        keys.right=true;
+       // player.velocity.x=speed;
+     if(e.key=="ArrowLeft")
+         keys.left=true;
+        //player.velocity.x=-speed;
+    if(e.key=="ArrowUp")
         player.velocity.y=-11;
-    }
+})
 
-});
-window.addEventListener("keyup",(event)=>{
-    if(event.key==="ArrowRight"){
-        keys.right.pressed=false;
-    }
-    if(event.key==="ArrowLeft"){
-        keys.left.pressed=false;
-    }
-});
+addEventListener("keyup",(e)=>{
+    //console.log(e);
+    if(e.key=="ArrowRight")
+        keys.right=false;
+       // player.velocity.x=0;
+    if(e.key=="ArrowLeft")
+        keys.left=false;
+        //player.velocity.x=0;
+})
