@@ -8,8 +8,9 @@
 //5. Movement 
 //6. Platform
 const gravity=0.5;
-const speed=2;
-
+const speed=5;
+const baseHeight=160;
+let offset=0;
 const gameCanvas=document.querySelector("#gameCanvas");
 gameCanvas.width=window.innerWidth;
 gameCanvas.height=window.innerHeight;
@@ -47,6 +48,7 @@ class Player{
         else
             this.velocity.y+=gravity;
 
+         
 
         this.draw();
     }
@@ -70,40 +72,75 @@ class Platform
 }
 const player=new Player();
 player.draw();
-const platform=new Platform(350,window.innerHeight-100,50,100);
+const platforms=[];
+//platform
 //const platform=new Platform(350,window.innerHeight-100,100,20);
-platform.draw();
-
-
+const platform=new Platform(350,window.innerHeight-100-baseHeight,50,100);
+const platform1=new Platform(700,window.innerHeight-200-baseHeight,50,200);
+//base
+const basePlatform=new Platform(0,window.innerHeight-baseHeight,550,baseHeight); 
+const basePlatform1 = new Platform(620, window.innerHeight - baseHeight, 1250, baseHeight);
+platforms.push(platform,platform1,basePlatform,basePlatform1);
 function animate()
 {
     requestAnimationFrame(animate);
     context.clearRect(0,0,window.innerWidth,window.innerHeight);
-
+    platforms.forEach((p)=>{
+        p.draw();
+    })
     
-    platform.draw();
+    // platform.draw();
+    // platform1.draw();
     player.update();
 
-    if(keys.right && player.position.x<=800)
+    if(keys.right && player.position.x<=800){
+        // offset+=speed;
         player.velocity.x=speed;
-    else if(keys.left && player.position.x>=180)
+    }
+    else if(keys.left && player.position.x>=180){
+        // offset-=speed;
         player.velocity.x=-speed;
-    else 
+    }
+    else{
         player.velocity.x=0;
+          if (keys.right) {
+            console.log("right key");
+            offset += 5;
+            platforms.forEach((p) => {
+                p.position.x -= speed;
 
-    if(player.position.x+player.width>=platform.position.x &&
-        player.position.x<=platform.position.x+platform.width &&
-        player.position.y+player.height>=platform.position.y &&
-        player.position.y<=platform.position.y+platform.height
+            })
+        }
+
+        if (keys.left) {
+            offset -= 5;
+            platforms.forEach((p) => {
+                p.position.x += speed;
+
+            })
+        }
+
+    
+    }
+    
+    platforms.forEach((p)=>{
+
+   
+    if(player.position.x+player.width>=p.position.x &&
+        player.position.x<=p.position.x+p.width &&
+        player.position.y+player.height>=p.position.y &&
+        player.position.y<=p.position.y+p.height
     )
         player.velocity.x=0;
 
-    if(player.position.y+player.height+player.velocity.y>=platform.position.y && player.position.x+player.width>=platform.position.x &&
-        player.position.x<=platform.position.x+platform.width 
+    if(player.position.y+player.height+player.velocity.y>=p.position.y 
+        && player.position.y+player.height<=p.position.y
+        && player.position.x+player.width>=p.position.x &&
+        player.position.x<=p.position.x+p.width 
 
     )
         player.velocity.y=0;
-
+ })
 
 }
 animate();
